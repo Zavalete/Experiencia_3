@@ -23,6 +23,37 @@ Lab 15125
  const int ledPin = 9;
 // VARIABLES GLOBALES NO INICIALIZADAS
  int  fadeValue, fadeValue2 ;
+
+/*Se desplazaron las funciones antes del setup con el fin de respetar las buenas practicas */
+
+// Funciones
+long microsecondsToInches(long microseconds)
+ {
+   /*
+   Según la hoja de datos de Parallax para el PING))), 
+   hay 73,746 microsegundos por pulgada o 29,034 microsegundos por centimetro 
+   (es decir, el sonido viaja a 1130 pies (o 34442.4cm) por segundo). 
+   Este da la distancia recorrida por el ping, ida y vuelta, 
+   por lo que dividimos por 2 para obtener la distancia del obstáculo.
+   ver: 
+   https://www.parallax.com/sites/default/files/downloads/28015-PING-Sensor-Product-Guide-v2.0.pdf
+        [En el PDF: TO_IN = 73_746' Inches ; TO_CM = 29_034' Centimeters ]
+   */
+   return microseconds / 74 / 2;
+ }
+ 
+long microsecondsToCentimeters(long microseconds)
+ {
+  /*
+  La velocidad del sonido es de 340 m / so 29 microsegundos por centímetro.
+  El ping viaja hacia afuera y hacia atrás, por lo que para encontrar 
+  la distancia del objeto tomamos la mitad de la distancia recorrida.
+  */
+   return microseconds / 29 / 2;
+ }
+
+// Fin Funciones
+
  
 void setup()
 
@@ -70,11 +101,18 @@ void loop()
 
 // Fade (o fading) Led
  // Si la distancia es menor a 300 cm
-  if (cm<300)  
+  if (cm<=340)  
 
  {    
-  // Brillo de led decae en la medida que se aleja hasta 300 cm
-  cm2 = 300 - cm;  
+    /*Para generar que la luz del led ingremente al alejarse del sensor se invierte el comportamiento en el if*/
+    
+  // Brillo de led incrementa en la medida que se aleja hasta 300 cm
+  cm2 = cm - 340;  
+    
+    /*Anteriormente era cm2 = 300-cm*/
+    /*Con el fin de que el led se apague al salir del rango del sensor se incrementa el limite de 300 a 340*/
+    /*Se intento con un incremento a 333 (limite que se indica del sensor), pero el led se apagaba al llehar a la mitad del circulo*/
+    
   //  valor entregado = map(valor que recibo, de Mínimo, de Máximo, a Mínimo, a Máximo)
   fadeValue2 = map(cm2 , 10, 333, 10, 255);
   // Escribe fadeValue2 al pin 9 
@@ -88,7 +126,6 @@ void loop()
 // Fin de Fade (o fading) Led
 
  
-
 
 // Depurado (o debug/debugging)
 // Muestra los valores a traves del monitor serie
@@ -109,35 +146,6 @@ void loop()
 //Fin de loop
 
  
-
-// Funciones
-long microsecondsToInches(long microseconds)
- {
-   /*
-   Según la hoja de datos de Parallax para el PING))), 
-   hay 73,746 microsegundos por pulgada o 29,034 microsegundos por centimetro 
-   (es decir, el sonido viaja a 1130 pies (o 34442.4cm) por segundo). 
-   Este da la distancia recorrida por el ping, ida y vuelta, 
-   por lo que dividimos por 2 para obtener la distancia del obstáculo.
-   ver: 
-   https://www.parallax.com/sites/default/files/downloads/28015-PING-Sensor-Product-Guide-v2.0.pdf
-        [En el PDF: TO_IN = 73_746' Inches ; TO_CM = 29_034' Centimeters ]
-   */
-   return microseconds / 74 / 2;
- }
- 
-long microsecondsToCentimeters(long microseconds)
- {
-  /*
-  La velocidad del sonido es de 340 m / so 29 microsegundos por centímetro.
-  El ping viaja hacia afuera y hacia atrás, por lo que para encontrar 
-  la distancia del objeto tomamos la mitad de la distancia recorrida.
-  */
-   return microseconds / 29 / 2;
- }
-
-// Fin Funciones
-
 /*
 #######################
 #   Fin de programa   #
